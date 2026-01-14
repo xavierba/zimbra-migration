@@ -522,6 +522,14 @@ if [ ${RESPONSE_VAR} == "y" ]
                   sudo -u zextras /opt/zextras/bin/zmprov ModifyDistributionList $i description "${description}"
                  fi
 
+                 if [[ ${LINE} == *"zimbraMailAlias:"* ]]; then
+                  zimbraMailAlias=${LINE/zimbraMailAlias:/}
+                  zimbraMailAlias=`echo $zimbraMailAlias | sed 's/^[[:space:]]*//; s/[[:space:]]*$//'`
+                  zimbraMailAlias=${zimbraMailAlias//\"/\\\"}
+                  echo "Add Alias $zimbraMailAlias to Distribution List $i"
+                  sudo -u zextras /opt/zextras/bin/zmprov addDistributionListAlias $i "${zimbraMailAlias}"
+                 fi
+
                  if [[ ${LINE} == *"zimbraMailForwardingAddress:"* ]]; then
                   zimbraMailForwardingAddress=${LINE/zimbraMailForwardingAddress:/}
                   zimbraMailForwardingAddress=`echo $zimbraMailForwardingAddress | sed 's/^[[:space:]]*//; s/[[:space:]]*$//'`  
