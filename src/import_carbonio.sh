@@ -514,6 +514,14 @@ if [ ${RESPONSE_VAR} == "y" ]
                   sudo -u zextras /opt/zextras/bin/zmprov ModifyDistributionList $i displayName "${displayName}"
                  fi
 
+                 if [[ ${LINE} == *"description:"* ]]; then
+                  description=${LINE/description:/}
+                  description=`echo $description | sed 's/^[[:space:]]*//; s/[[:space:]]*$//'`
+                  description=${description//\"/\\\"}
+                  echo "Modify Distribution List $i with Description $description"
+                  sudo -u zextras /opt/zextras/bin/zmprov ModifyDistributionList $i description "${description}"
+                 fi
+
                  if [[ ${LINE} == *"zimbraMailForwardingAddress:"* ]]; then
                   zimbraMailForwardingAddress=${LINE/zimbraMailForwardingAddress:/}
                   zimbraMailForwardingAddress=`echo $zimbraMailForwardingAddress | sed 's/^[[:space:]]*//; s/[[:space:]]*$//'`  
