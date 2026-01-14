@@ -502,8 +502,21 @@ if [ ${RESPONSE_VAR} == "y" ]
       FILESIZE=$(stat -c%s "${BACKUP_DIR}/distribution/${i}.txt")
           if [ ${FILESIZE} -gt 1 ]
           then
-          echo "Creating Distribution List ${i}"
-          sudo -u zextras /opt/zextras/bin/zmprov CreateDistributionList $i 
+            if grep "memberURL: ldap://" "${BACKUP_DIR}/distribution/${i}.txt"
+            then
+              while read -r LINE
+              do
+                 if [[ ${LINE} == *"memberURL:"* ]]; then
+                  memberURL=${LINE/memberURL:/}
+                  memberURL=`echo $memberURL | sed 's/^[[:space:]]*//; s/[[:space:]]*$//'`
+                  echo "Creating Dynamic Distribution List ${i}"
+                  sudo -u zextras /opt/zextras/bin/zmprov CreateDynamicDistributionList $i memberURL "${memberURL}" zimbraIsACLGroup FALSE
+                 fi
+              done < "${BACKUP_DIR}/distribution/${i}.txt"
+            else
+              echo "Creating Static Distribution List ${i}"
+              sudo -u zextras /opt/zextras/bin/zmprov CreateDistributionList $i
+	    fi
               while read -r LINE
               do
                  if [[ ${LINE} == *"displayName:"* ]]; then
